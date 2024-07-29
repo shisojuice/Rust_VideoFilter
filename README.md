@@ -6,5 +6,5 @@ https://qiita.com/shisojuice/items/7142c594afd6bdc79b13
 
 Demoサイト
 
-https://rust-videofilter.pages.dev
+https://shisojuice.github.io/Rust_VideoFilter/
 
