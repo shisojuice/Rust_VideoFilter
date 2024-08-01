@@ -32,6 +32,8 @@ pub fn pixel_filter(mut buffer: Vec<u8>,canvas_width :u32,canvas_height :u32,dot
             g /= (dot_size * dot_size) as u32;
             b /= (dot_size * dot_size) as u32;
 
+            (r,g,b)=closest_color(r,g,b);
+
             for dy in 0..dot_size {
                 for dx in 0..dot_size {
                     let i = ((y + dy) * width + (x + dx)) * 4;
@@ -47,4 +49,37 @@ pub fn pixel_filter(mut buffer: Vec<u8>,canvas_width :u32,canvas_height :u32,dot
     }
 
     buffer
+}
+
+fn closest_color(r: u32, g: u32, b: u32) -> (u32, u32, u32) {
+    let colors = [
+        (0, 0, 0),          // 黒
+        (32, 32, 32),     // 濃いグレー
+        (64, 64, 64),     // グレー
+        (96, 96, 96),     // 薄いグレー
+        (128, 128, 128), // もっと薄いグレー
+        (160, 160, 160), // もっともっと薄いグレー
+        (192, 192, 192), // もっともっともっと薄いグレー
+        (225, 225, 225), // 白
+        (128, 0, 0),      // 暗い赤
+        (255, 0, 0),      // 赤
+        (168, 42, 42),     // 茶色
+        (255, 160, 122), // ピンク
+        (0, 128, 0),      // 暗い緑
+        (0, 255, 0),      // 緑
+        (128, 128, 0),     // 黄緑
+        (255, 255, 0),     // 黄
+    ];
+    *colors
+        .iter()
+        .min_by_key(|&&(cr, cg, cb)| color_distance(r, g, b, cr, cg, cb))
+        .unwrap()
+}
+
+fn color_distance(r1: u32, g1: u32, b1: u32, r2: u32, g2: u32, b2: u32) -> u32 {
+    let r_diff = r1 as i32 - r2 as i32;
+    let g_diff = g1 as i32 - g2 as i32;
+    let b_diff = b1 as i32 - b2 as i32;
+    // 3次元空間上の距離を計算
+    (r_diff * r_diff + g_diff * g_diff + b_diff * b_diff) as u32
 }
